@@ -10,7 +10,7 @@ spec:
  - secretName: skyworkz-news-secret
  rules:
  - http:
-   paths:
-   - backend:
-     serviceName: sampleapp
-     servicePort: 80
+    paths:
+    - backend:
+      serviceName: sampleapp
+      servicePort: 80
