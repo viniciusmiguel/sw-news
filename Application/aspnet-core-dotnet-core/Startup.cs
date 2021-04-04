@@ -1,16 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Skyworkz.News.Application;
+using Skyworkz.News.Configurations;
+using Skyworkz.News.Domain;
+using Skyworkz.News.Infrastructure;
 
-namespace aspnet_core_dotnet_core
+namespace Skyworkz.News
 {
     public class Startup
     {
@@ -21,24 +20,25 @@ namespace aspnet_core_dotnet_core
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            // Enable Application Insights for telemetries. Update the instrumentation key in 'appsettings.json' to transfer the events.
             services.AddApplicationInsightsTelemetry();
             services.AddApplicationInsightsKubernetesEnricher();
+
+            services.AddAutoMapperConfiguration(); ;
+
+            services.AddScoped<INewsAppService, NewsAppService>();
+            services.AddScoped<INewsRepository, NewsRepository>();
 
             services.AddRazorPages();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -57,6 +57,10 @@ namespace aspnet_core_dotnet_core
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "api/{controller=NewsEntity}/{action=Index}/{id?}");
+
                 endpoints.MapRazorPages();
             });
         }

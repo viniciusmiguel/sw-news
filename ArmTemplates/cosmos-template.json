@@ -1,0 +1,287 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "locationName": {
+            "type": "string"
+        },
+        "defaultExperience": {
+            "type": "string"
+        },
+        "isZoneRedundant": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2017-05-10",
+            "type": "Microsoft.Resources/deployments",
+            "name": "v-net_64ad362e-5153-4529-b5ab-3562a3296063",
+            "subscriptionId": "02b977dc-c04f-4a17-bcaa-b9fbcc4244ad",
+            "resourceGroup": "sw-news-rg",
+            "dependsOn": [],
+            "resources": [],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {},
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "apiVersion": "2019-04-01",
+                            "name": "v-net",
+                            "type": "Microsoft.Network/virtualNetworks",
+                            "location": "westeurope",
+                            "properties": {
+                                "provisioningState": "Succeeded",
+                                "resourceGuid": "659ce3c0-5107-4812-b350-c8d1346f9ad6",
+                                "addressSpace": {
+                                    "addressPrefixes": [
+                                        "10.0.0.0/16"
+                                    ]
+                                },
+                                "dhcpOptions": {
+                                    "dnsServers": []
+                                },
+                                "subnets": [
+                                    {
+                                        "name": "default",
+                                        "id": "/subscriptions/02b977dc-c04f-4a17-bcaa-b9fbcc4244ad/resourceGroups/sw-news-rg/providers/Microsoft.Network/virtualNetworks/v-net/subnets/default",
+                                        "etag": "W/\"a630adda-15a0-4ec9-a2af-49bc09d91135\"",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "10.0.0.0/24",
+                                            "serviceEndpoints": [
+                                                {
+                                                    "provisioningState": "Succeeded",
+                                                    "service": "Microsoft.AzureCosmosDB",
+                                                    "locations": [
+                                                        "*"
+                                                    ]
+                                                }
+                                            ],
+                                            "delegations": [],
+                                            "privateEndpointNetworkPolicies": "Disabled",
+                                            "privateLinkServiceNetworkPolicies": "Enabled"
+                                        },
+                                        "type": "Microsoft.Network/virtualNetworks/subnets"
+                                    }
+                                ],
+                                "virtualNetworkPeerings": [],
+                                "enableDdosProtection": false
+                            }
+                        }
+                    ],
+                    "outputs": {}
+                }
+            }
+        },
+        {
+            "name": "[concat(parameters('name'), '/default')]",
+            "type": "Microsoft.DocumentDB/databaseAccounts/notebookWorkspaces",
+            "properties": {
+                "dependsOn": [
+                    "Microsoft.Resources/deployments/v-net_64ad362e-5153-4529-b5ab-3562a3296063"
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]"
+            ],
+            "apiVersion": "2020-04-01"
+        },
+        {
+            "apiVersion": "2020-04-01",
+            "kind": "GlobalDocumentDB",
+            "type": "Microsoft.DocumentDb/databaseAccounts",
+            "name": "[parameters('name')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "databaseAccountOfferType": "Standard",
+                "locations": [
+                    {
+                        "id": "[concat(parameters('name'), '-', parameters('location'))]",
+                        "failoverPriority": 0,
+                        "locationName": "[parameters('locationName')]"
+                    }
+                ],
+                "backupPolicy": {
+                    "type": "Periodic",
+                    "periodicModeProperties": {
+                        "backupIntervalInMinutes": 240,
+                        "backupRetentionIntervalInHours": 8,
+                        "backupStorageRedundancy": "Geo"
+                    }
+                },
+                "isVirtualNetworkFilterEnabled": false,
+                "virtualNetworkRules": [],
+                "ipRules": [
+                    {
+                        "ipAddressOrRange": "104.42.195.92"
+                    },
+                    {
+                        "ipAddressOrRange": "40.76.54.131"
+                    },
+                    {
+                        "ipAddressOrRange": "52.176.6.30"
+                    },
+                    {
+                        "ipAddressOrRange": "52.169.50.45"
+                    },
+                    {
+                        "ipAddressOrRange": "52.187.184.26"
+                    },
+                    {
+                        "ipAddressOrRange": "204.193.63.11"
+                    }
+                ],
+                "dependsOn": [],
+                "enableMultipleWriteLocations": false,
+                "capabilities": [],
+                "enableFreeTier": true
+            },
+            "tags": {
+                "defaultExperience": "[parameters('defaultExperience')]",
+                "hidden-cosmos-mmspecial": "",
+                "CosmosAccountType": "Non-Production"
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "type": "Microsoft.Resources/deployments",
+            "name": "cosmos-endpoint_64ad362e-5153-4529-b5ab-3562a3296064",
+            "subscriptionId": "02b977dc-c04f-4a17-bcaa-b9fbcc4244ad",
+            "resourceGroup": "sw-news-rg",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('name'))]"
+            ],
+            "resources": [],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "privateEndpointName": {
+                        "value": "cosmos-endpoint"
+                    },
+                    "privateEndpointConnectionId": {
+                        "value": "/subscriptions/02b977dc-c04f-4a17-bcaa-b9fbcc4244ad/resourceGroups/sw-news-rg/providers/Microsoft.Network/privateEndpoints/privateLinkServiceConnections/cosmos-endpoint_73c02093-a5b3-4e66-a74c-5fead0c72013"
+                    },
+                    "privateEndpointConnectionName": {
+                        "value": "cosmos-endpoint_73c02093-a5b3-4e66-a74c-5fead0c72013"
+                    },
+                    "privateEndpointId": {
+                        "value": "/subscriptions/02b977dc-c04f-4a17-bcaa-b9fbcc4244ad/resourceGroups/sw-news-rg/providers/Microsoft.Network/privateEndpoints/cosmos-endpoint"
+                    },
+                    "privateEndpointApiVersion": {
+                        "value": "2019-04-01"
+                    },
+                    "privateLinkServiceId": {
+                        "value": "/subscriptions/02b977dc-c04f-4a17-bcaa-b9fbcc4244ad/resourcegroups/sw-news-rg/providers/Microsoft.DocumentDB/databaseAccounts/skyworkz-news-cosmos-db"
+                    },
+                    "groupId": {
+                        "value": "Sql"
+                    },
+                    "subnetId": {
+                        "value": "/subscriptions/02b977dc-c04f-4a17-bcaa-b9fbcc4244ad/resourceGroups/sw-news-rg/providers/Microsoft.Network/virtualNetworks/v-net/subnets/default"
+                    },
+                    "location": {
+                        "value": "westeurope"
+                    },
+                    "tags": {
+                        "value": {}
+                    }
+                },
+                "templatelink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "https://cosmos.hosting.portal.azure.net/cosmos/Content/2.0.34665518.0/DeploymentTemplates/PrivateEndpointForCosmosAccount.json"
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "PrivateDns-64ad362e51534529b5ab3562a3296065",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[string('sw-news-rg')]",
+            "dependsOn": [
+                "[string('cosmos-endpoint_64ad362e-5153-4529-b5ab-3562a3296064')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/privateDnsZones",
+                            "apiVersion": "2018-09-01",
+                            "name": "[string('privatelink.documents.azure.com')]",
+                            "location": "global",
+                            "tags": {},
+                            "properties": {}
+                        },
+                        {
+                            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+                            "apiVersion": "2018-09-01",
+                            "name": "[concat(string('privatelink.documents.azure.com'), '/', uniqueString(string('/subscriptions/02b977dc-c04f-4a17-bcaa-b9fbcc4244ad/resourceGroups/sw-news-rg/providers/Microsoft.Network/virtualNetworks/v-net')))]",
+                            "location": "global",
+                            "dependsOn": [
+                                "[string('privatelink.documents.azure.com')]"
+                            ],
+                            "properties": {
+                                "virtualNetwork": {
+                                    "id": "[string('/subscriptions/02b977dc-c04f-4a17-bcaa-b9fbcc4244ad/resourceGroups/sw-news-rg/providers/Microsoft.Network/virtualNetworks/v-net')]"
+                                },
+                                "registrationEnabled": false
+                            }
+                        },
+                        {
+                            "apiVersion": "2017-05-10",
+                            "name": "EndpointDnsRecords-64ad362e51534529b5ab3562a3296065",
+                            "type": "Microsoft.Resources/deployments",
+                            "dependsOn": [
+                                "[string('privatelink.documents.azure.com')]"
+                            ],
+                            "properties": {
+                                "mode": "Incremental",
+                                "templatelink": {
+                                    "contentVersion": "1.0.0.0",
+                                    "uri": "https://cosmos.hosting.portal.azure.net/cosmos/Content/2.0.34665518.0/DeploymentTemplates/PrivateDnsForPrivateEndpoint.json"
+                                },
+                                "parameters": {
+                                    "privateDnsName": {
+                                        "value": "[string('privatelink.documents.azure.com')]"
+                                    },
+                                    "privateEndpointNicResourceId": {
+                                        "value": "[reference('cosmos-endpoint_64ad362e-5153-4529-b5ab-3562a3296064').outputs.networkInterfaceId.value]"
+                                    },
+                                    "nicRecordsTemplateUri": {
+                                        "value": "https://cosmos.hosting.portal.azure.net/cosmos/Content/2.0.34665518.0/DeploymentTemplates/PrivateDnsForPrivateEndpointNic.json"
+                                    },
+                                    "ipConfigRecordsTemplateUri": {
+                                        "value": "https://cosmos.hosting.portal.azure.net/cosmos/Content/2.0.34665518.0/DeploymentTemplates/PrivateDnsForPrivateEndpointIpConfig.json"
+                                    },
+                                    "uniqueId": {
+                                        "value": "64ad362e51534529b5ab3562a3296065"
+                                    },
+                                    "existingRecords": {
+                                        "value": {}
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "subscriptionId": "[string('02b977dc-c04f-4a17-bcaa-b9fbcc4244ad')]"
+        }
+    ],
+    "outputs": {}
+}

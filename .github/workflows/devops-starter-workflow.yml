@@ -6,23 +6,33 @@ on:
 
 env:
   RESOURCEGROUPNAME: "sw-news-rg"
-  LOCATION: "East US"
+  LOCATION: "westeurope"
+  LOCATIONNAME: "West Europe"
   SUBSCRIPTIONID: "02b977dc-c04f-4a17-bcaa-b9fbcc4244ad"
-  IMAGENAME: "swnews6d43"
-  REGISTRYSKU: "Standard"
-  REGISTRYNAME: "swnewsacr"
-  REGISTRYLOCATION: "West Europe"
-  CLUSTERNAME: "sw-news"
-  APPINSIGHTSLOCATION: "West Europe"
-  CLUSTERLOCATION: "East US"
+  IMAGENAME: "skyworkznews587c"
+  REGISTRYSKU: "Basic"
+  REGISTRYNAME: "skyworkznewsacr"
+  REGISTRYLOCATION: "westeurope"
+  CLUSTERNAME: "skyworkz-news-kube"
+  APPINSIGHTSLOCATION: "westeurope"
+  CLUSTERLOCATION: "westeurope"
   AGENTCOUNT: "1"
-  AGENTVMSIZE: "Standard_DS2_v2"
-  KUBERNETESVERSION: 1.18.14
-  OMSLOCATION: "West Europe"
-  OMSWORKSPACENAME: "swnews4272"
+  AGENTVMSIZE: "Standard_DS1_v2"
+  KUBERNETESVERSION: 1.17.13
+  OMSLOCATION: "westeurope"
+  OMSWORKSPACENAME: "skyworkznews2d68"
   HTTPSAPPLICATIONROUTINGENABLED: false
   KUBERNETESAPI: "apps/v1"
-  NAMESPACE: "swnewsd516"
+  NAMESPACE: "skyworkznews2066"
+  COSMOSNAME: "skyworkz-news-cosmos-db"
+  COSMOSSQLNAME: "skyworkz-news-cosmos-db-sql"
+  APPGWNAME: "skyworkz-news-app-gw"
+  APPGWTIER: "Standard_v2"
+  APPGWSKU: "Standard_v2"
+  APPGWCAPACITY: 1
+  APPGWMAXCAPACITY: 3
+  APPGWSUBNET: "gateway"
+
 
 jobs:
   build:
@@ -36,7 +46,86 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+    - name: Helm tool installer
+      uses: Azure/setup-helm@v1.1
+    - name: Get AKS Credentials
+      id: getContext
+      run: |
+          az aks get-credentials --resource-group ${{ env.RESOURCEGROUPNAME }} --name ${{ env.CLUSTERNAME }} --file $GITHUB_WORKSPACE/kubeconfig
+          echo "KUBECONFIG=$GITHUB_WORKSPACE/kubeconfig" >> $GITHUB_ENV
+    - name: Install ingress helm package
+      run: |
+        helm repo add application-gateway-kubernetes-ingress https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/
+        helm repo update
+        echo "Creating Credential"
+        SP=$(az ad sp create-for-rbac --sdk-auth --role Contributor | base64)
+        SP_CLEANED=$(echo -e "${SP}" | tr -d '[:space:]')
+        echo "Credential Created"
+        echo $SP_CLEANED
+        helm install ingress-azure application-gateway-kubernetes-ingress/ingress-azure \
+        --namespace default \
+        --debug \
+        --set appgw.name=${{ env.APPGWNAME }} \
+        --set appgw.resourceGroup=${{ env.RESOURCEGROUPNAME }} \
+        --set appgw.subscriptionId=${{ env.SUBSCRIPTIONID }} \
+        --set appgw.usePrivateIP=false \
+        --set appgw.shared=false \
+        --set armAuth.type=servicePrincipal \
+        --set armAuth.secretJSON=$SP_CLEANED \
+        --set rbac.enabled=false \
+        --set verbosityLevel=3 \
+        --set kubernetes.watchNamespace=default \
+        --version 1.3.0
+    - name: Create Application Gateway ingress controller in AKS
+      uses: Azure/CLI@v1
+      id: createAppGwIngressControllerAKS
+      with:
+        inlineScript: |
+          #!/bin/bash
+          az aks get-credentials --name ${{ env.CLUSTERNAME }} --resource-group ${{ env.RESOURCEGROUPNAME }} --admin
+          openssl ecparam -out frontend.key -name prime256v1 -genkey
+          openssl req -new -sha256 -key frontend.key -out frontend.csr -subj "/CN=SkyworkzNews"
+          openssl x509 -req -sha256 -days 365 -in frontend.csr -signkey frontend.key -out frontend.crt
+          kubectl create secret tls skyworkz-news-secret --key frontend.key --cert frontend.crt
+          echo -e "apiVersion: extensions/v1beta1\\nkind: Ingress\\nmetadata:\\n name: ingress-skyworkz-news\\n annotations:\\n  kubernetes.io/ingress.class: azure/application-gateway\\n  appgw.ingress.kubernetes.io/ssl-redirect: "true"\\nspec:\\n tls:\\n  - secretName: skyworkz-news-secret\\n rules:\\n  - http:\\n     paths:\\n      - backend:\\n         serviceName: SkyworkzNews\\n         servicePort: 80" > ingress.yaml
+          kubectl apply -f ingress.yaml
+    - name: Create Virtual Net
+      uses: azure/arm-deploy@v1
+      id: createVnet
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.SUBSCRIPTIONID }}
+        resourceGroupName: ${{ env.RESOURCEGROUPNAME }}
+        template: ./ArmTemplates/v-net.json
+    - name: Create Public IP
+      uses: azure/arm-deploy@v1
+      id: createPublicIp
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.SUBSCRIPTIONID }}
+        resourceGroupName: ${{ env.RESOURCEGROUPNAME }}
+        template: ./ArmTemplates/public-ip.json
+    - name: Create CosmosDB
+      uses: Azure/CLI@v1
+      id: createCosmosDB
+      with:
+        inlineScript: |
+          #!/bin/bash
+          if $(az cosmosdb check-name-exists --name ${{ env.COSMOSNAME }}) ; then
+            echo "Cosmos DB Account already exists, skipping creation..."
+          else
+            az cosmosdb create -n ${{ env.COSMOSNAME }} -g ${{ env.RESOURCEGROUPNAME }} --default-consistency-level Eventual --Locations regionName="${{ env.LOCATIONNAME }}" failoverPriority=0 isZoneRedundant=False
+            az cosmosdb sql database create -a ${{ env.COSMOSNAME }} -g ${{ env.RESOURCEGROUPNAME }} -n ${{ env.COSMOSSQLNAME }}
+          fi
+    - name: Create Application Gateway
+      uses: azure/arm-deploy@v1
+      id: createAppGw
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.SUBSCRIPTIONID }}
+        resourceGroupName: ${{ env.RESOURCEGROUPNAME }}
+        template: ./ArmTemplates/app-gw.json
+        parameters: applicationGatewayName="${{ env.APPGWNAME }}" location="${{ env.LOCATION }}" tier="${{ env.APPGWTIER }}" skuSize="${{ env.APPGWSKU }}" capacity="${{ env.APPGWCAPACITY }}" subnetName="${{ env.APPGWSUBNET }}" autoScaleMaxCapacity="${{ env.APPGWMAXCAPACITY }}"
     - name: Create AKS Cluster
       uses: azure/arm-deploy@v1
       id: deploy
@@ -46,7 +135,6 @@ jobs:
         resourceGroupName: ${{ env.RESOURCEGROUPNAME }}
         template: ./ArmTemplates/aks-template.json
         parameters: clusterName="${{ env.CLUSTERNAME }}" appInsightsLocation="${{ env.APPINSIGHTSLOCATION }}" clusterLocation="${{ env.CLUSTERLOCATION }}" agentCount="${{ env.AGENTCOUNT }}" agentVMSize="${{ env.AGENTVMSIZE }}" kubernetesVersion="${{ env.KUBERNETESVERSION }}" omsLocation="${{ env.OMSLOCATION }}" omsWorkspaceName="${{ env.OMSWORKSPACENAME }}" httpApplicationRoutingEnabled="${{ env.HTTPSAPPLICATIONROUTINGENABLED }}"  dnsPrefix="${{ env.CLUSTERNAME }}"
-
     - name: Create ACR
       id: createACR
       run: |
@@ -135,6 +223,8 @@ jobs:
           ${{ env.REGISTRYNAME }}.azurecr.io/${{ env.IMAGENAME }}:${{ github.sha }}
         imagepullsecrets: |
           ${{ env.CLUSTERNAME }}dockerauth
+
+    
 
     - name : Cleanup
       run: | 
