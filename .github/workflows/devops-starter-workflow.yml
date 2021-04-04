@@ -214,7 +214,7 @@ jobs:
         openssl req -new -sha256 -key frontend.key -out frontend.csr -subj "/CN=SkyworkzNews"
         openssl x509 -req -sha256 -days 365 -in frontend.csr -signkey frontend.key -out frontend.crt
         kubectl create secret tls skyworkz-news-secret --key frontend.key --cert frontend.crt
-        echo -e "apiVersion: extensions/v1beta1\\nkind: Ingress\\nmetadata:\\n name: ingress-skyworkz-news\\n annotations:\\n  kubernetes.io/ingress.class: azure/application-gateway\\n  appgw.ingress.kubernetes.io/ssl-redirect: "true"\\nspec:\\n tls:\\n  - secretName: skyworkz-news-secret\\n rules:\\n  - http:\\n     paths:\\n      - backend:\\n         serviceName: SkyworkzNews\\n         servicePort: 80" > ingress.yaml
+        wget -c https://raw.githubusercontent.com/viniciusmiguel/sw-news/master/ArmTemplates/ingress.yaml -O ingress.yaml
         kubectl apply -f ingress.yaml
     - name : Cleanup
       run: | 
