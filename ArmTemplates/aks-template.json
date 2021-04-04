@@ -69,6 +69,7 @@
             "properties": {
                 "dnsPrefix": "[parameters('dnsPrefix')]",
                 "kubernetesVersion": "[parameters('kubernetesVersion')]",
+                "enableRBAC": "true",
                 "addonProfiles": {
                     "httpApplicationRouting": {
                         "enabled": "[parameters('httpApplicationRoutingEnabled')]"
