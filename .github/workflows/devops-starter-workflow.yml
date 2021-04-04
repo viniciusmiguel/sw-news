@@ -201,9 +201,8 @@ jobs:
         --set verbosityLevel=3 \
         --set kubernetes.watchNamespace=default \
         --version 1.3.0
-    -name: Install Kubectl
-      uses: azure/setup-kubectl@v1
-      
+    - name: Kubectl tool installer
+      uses: Azure/setup-kubectl@v1
     - name: Create Application Gateway ingress controller in AKS
       run: |
         openssl ecparam -out frontend.key -name prime256v1 -genkey
