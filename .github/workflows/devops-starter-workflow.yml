@@ -187,11 +187,6 @@ jobs:
       run: |
         helm repo add application-gateway-kubernetes-ingress https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/
         helm repo update
-        echo "Creating Credential"
-        SP=$(az ad sp create-for-rbac --sdk-auth --role Contributor | base64)
-        SP_CLEANED=$(echo -e "${SP}" | tr -d '[:space:]')
-        echo "Credential Created"
-        echo $SP_CLEANED
         helm install ingress-azure application-gateway-kubernetes-ingress/ingress-azure \
         --namespace default \
         --debug \
@@ -201,7 +196,7 @@ jobs:
         --set appgw.usePrivateIP=false \
         --set appgw.shared=false \
         --set armAuth.type=servicePrincipal \
-        --set armAuth.secretJSON=$SP_CLEANED \
+        --set armAuth.secretJSON=${{ secrets.AZURE_SP_SECRET }} \
         --set rbac.enabled=false \
         --set verbosityLevel=3 \
         --set kubernetes.watchNamespace=default \
