@@ -71,7 +71,7 @@ jobs:
           if $(az cosmosdb check-name-exists --name ${{ env.COSMOSNAME }}) ; then
             echo "Cosmos DB Account already exists, skipping creation..."
           else
-            az cosmosdb create -n ${{ env.COSMOSNAME }} -g ${{ env.RESOURCEGROUPNAME }} --default-consistency-level Eventual --Locations regionName=${{ env.LOCATION }} failoverPriority=0 isZoneRedundant=False
+            az cosmosdb create -n ${{ env.COSMOSNAME }} -g ${{ env.RESOURCEGROUPNAME }} --subscription ${{ env.SUBSCRIPTIONID }}
             az cosmosdb sql database create -a ${{ env.COSMOSNAME }} -g ${{ env.RESOURCEGROUPNAME }} -n ${{ env.COSMOSSQLNAME }}
           fi
     - name: Create Application Gateway
