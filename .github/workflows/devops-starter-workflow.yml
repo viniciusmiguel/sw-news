@@ -196,11 +196,6 @@ jobs:
 
     - name: Helm tool installer
       uses: Azure/setup-helm@v1.1
-    - name: Get AKS Credentials
-      id: getContext
-      run: |
-          az aks get-credentials --resource-group ${{ env.RESOURCEGROUPNAME }} --name ${{ env.CLUSTERNAME }} --file $GITHUB_WORKSPACE/kubeconfig
-          echo "KUBECONFIG=$GITHUB_WORKSPACE/kubeconfig" >> $GITHUB_ENV
     - name: Install ingress helm package
       run: |
         helm repo add application-gateway-kubernetes-ingress https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/
