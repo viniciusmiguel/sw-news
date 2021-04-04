@@ -191,7 +191,7 @@ jobs:
           echo "helm package already deployed"
         else
           helm install ingress-azure application-gateway-kubernetes-ingress/ingress-azure \
-          --namespace default \
+          --namespace ${{ env.NAMESPACE }} \
           --debug \
           --set appgw.name=${{ env.APPGWNAME }} \
           --set appgw.resourceGroup=${{ env.RESOURCEGROUPNAME }} \
@@ -213,7 +213,7 @@ jobs:
         openssl ecparam -out frontend.key -name prime256v1 -genkey
         openssl req -new -sha256 -key frontend.key -out frontend.csr -subj "/CN=SkyworkzNews"
         openssl x509 -req -sha256 -days 365 -in frontend.csr -signkey frontend.key -out frontend.crt
-        kubectl create secret tls skyworkz-news-secret --key frontend.key --cert frontend.crt --dry-run=client -o yaml | kubectl apply -f -
+        kubectl create secret tls skyworkz-news-secret --namespace ${{ env.NAMESPACE }} --key frontend.key --cert frontend.crt --dry-run=client -o yaml | kubectl apply -f -
         wget -c https://raw.githubusercontent.com/viniciusmiguel/sw-news/master/ArmTemplates/ingress.yaml -O ingress.yaml
         kubectl apply -f ingress.yaml
     - name : Cleanup
