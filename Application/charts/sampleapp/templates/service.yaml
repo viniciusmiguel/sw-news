@@ -9,7 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   {{- if .Values.ingress.enabled }}
-  type: ClusterIP
+  type: NodePort
   {{- else }}
   type: LoadBalancer
   {{- end }}
