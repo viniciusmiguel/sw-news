@@ -1,9 +1,9 @@
 ﻿using System;
-
+using Newtonsoft.Json;
 
 namespace Skyworkz.News.Domain
 {
-    public class NewsEntity
+    public class NewsEntity : Entity
     {
         protected NewsEntity()
         {
@@ -16,10 +16,13 @@ namespace Skyworkz.News.Domain
             Description = description;
             Date = DateTime.Now;
         }
-        public Guid Id { get; private set; }
+        
         public string Title { get; private set; }
         public string Description { get; private set; }
         public DateTime Date { get; private set; }
-        
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }

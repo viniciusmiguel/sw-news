@@ -149,7 +149,17 @@ jobs:
         container-registry-username: ${{ steps.getACRCred.outputs.acr_username }}
         container-registry-password: ${{ steps.getACRCred.outputs.acr_password }}
         secret-name: ${{ env.CLUSTERNAME }}dockerauth
-
+    - name: Get Cosmos DB credentials
+      id: getCosmosCredentials
+      run: |
+           echo "::set-output name=cs::`az cosmosdb keys list --type connection-strings --name skyworkz-news-cosmos-db --resource-group sw-news-rg --query connectionStrings[0].connectionString | xargs`"
+    - uses: azure/k8s-create-secret@v1
+      with:
+        namespace: ${{ env.NAMESPACE }}
+        secret-type: 'generic'
+        arguments:  --from-literal=cosmos-connection-string=${{ steps.getCosmosCredentials.outputs.cs }} 
+        secret-name: cosmos-connection-string
+        
     - name: Fetch Application insights key
       id: GetAppInsightsKey
       run: |

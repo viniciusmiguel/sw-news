@@ -33,6 +33,8 @@ namespace Skyworkz.News
 
             services.AddAutoMapperConfiguration(); ;
 
+            services.AddSingleton<CosmosDB>();
+
             services.AddScoped<INewsAppService, NewsAppService>();
             services.AddScoped<INewsRepository, NewsRepository>();
 
