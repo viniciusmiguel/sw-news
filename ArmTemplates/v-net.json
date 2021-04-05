@@ -27,7 +27,7 @@
                     {
                         "name": "cosmos",
                         "properties": {
-                            "addressPrefix": "10.0.2.0/24",
+                            "addressPrefix": "10.2.0.0/24",
                             "serviceEndpoints": [
                                 {
                                     "service": "Microsoft.AzureCosmosDB",
@@ -54,7 +54,7 @@
                     {
                         "name": "gateway",
                         "properties": {
-                            "addressPrefix": "10.0.1.0/24",
+                            "addressPrefix": "10.1.0.0/24",
                             "serviceEndpoints": [],
                             "delegations": [],
                             "privateEndpointNetworkPolicies": "Enabled",
