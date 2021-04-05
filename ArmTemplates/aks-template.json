@@ -86,7 +86,8 @@
                     {
                         "name": "agentpool",
                         "count": "[parameters('agentCount')]",
-                        "vmSize": "[parameters('agentVMSize')]"
+                        "vmSize": "[parameters('agentVMSize')]",
+                        "vnetSubnetId": "/subscriptions/02b977dc-c04f-4a17-bcaa-b9fbcc4244ad/resourceGroups/sw-news-rg/providers/Microsoft.Network/virtualNetworks/v-net/subnets/aks-subnet"
                     }
                 ]
             },
