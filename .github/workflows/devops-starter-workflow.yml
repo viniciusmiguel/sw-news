@@ -210,7 +210,7 @@ jobs:
       uses: Azure/setup-kubectl@v1
     - name: Setup AAD Pod Identity
       run: |
-        kubectl apply -f https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.6.0/deploy/infra/deployment-rbac.yaml
+        kubectl apply -f https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.6.0/deploy/infra/deployment.yaml
     - name: Create Application Gateway ingress controller in AKS
       run: |
         openssl ecparam -out frontend.key -name prime256v1 -genkey
