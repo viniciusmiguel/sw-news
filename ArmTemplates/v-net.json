@@ -25,6 +25,26 @@
                 },
                 "subnets": [
                     {
+                        "name": "default",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "gw",
+                        "properties": {
+                            "addressPrefix": "10.1.0.0/24",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
                         "name": "cosmos",
                         "properties": {
                             "addressPrefix": "10.2.0.0/24",
@@ -42,32 +62,12 @@
                         }
                     },
                     {
-                        "name": "default",
-                        "properties": {
-                            "addressPrefix": "10.0.0.0/24",
-                            "serviceEndpoints": [],
-                            "delegations": [],
-                            "privateEndpointNetworkPolicies": "Enabled",
-                            "privateLinkServiceNetworkPolicies": "Enabled"
-                        }
-                    },
-                    {
-                        "name": "gateway",
-                        "properties": {
-                            "addressPrefix": "10.1.0.0/24",
-                            "serviceEndpoints": [],
-                            "delegations": [],
-                            "privateEndpointNetworkPolicies": "Enabled",
-                            "privateLinkServiceNetworkPolicies": "Enabled"
-                        }
-                    },
-                    {
                         "name": "aks-subnet",
                         "properties": {
-                            "addressPrefix": "10.240.0.0/16",
+                            "addressPrefix": "10.10.0.0/16",
                             "serviceEndpoints": [],
                             "delegations": [],
-                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateEndpointNetworkPolicies": "Disabled",
                             "privateLinkServiceNetworkPolicies": "Enabled"
                         }
                     }

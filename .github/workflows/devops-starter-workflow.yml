@@ -31,7 +31,7 @@ env:
   APPGWSKU: "Standard_v2"
   APPGWCAPACITY: 1
   APPGWMAXCAPACITY: 3
-  APPGWSUBNET: "gateway"
+  APPGWSUBNET: "gw"
 
 
 jobs:
