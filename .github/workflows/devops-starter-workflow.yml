@@ -74,15 +74,15 @@ jobs:
             az cosmosdb create -n ${{ env.COSMOSNAME }} -g ${{ env.RESOURCEGROUPNAME }} --subscription ${{ env.SUBSCRIPTIONID }}
             az cosmosdb sql database create -a ${{ env.COSMOSNAME }} -g ${{ env.RESOURCEGROUPNAME }} -n ${{ env.COSMOSSQLNAME }}
           fi
-#    - name: Create Application Gateway
-#      uses: azure/arm-deploy@v1
-#      id: createAppGw
-#      with:
-#        scope: resourcegroup
-#        subscriptionId: ${{ env.SUBSCRIPTIONID }}
-#        resourceGroupName: ${{ env.RESOURCEGROUPNAME }}
-#        template: ./ArmTemplates/app-gw.json
-#        parameters: applicationGatewayName="${{ env.APPGWNAME }}" location="${{ env.LOCATION }}" tier="${{ env.APPGWTIER }}" skuSize="${{ env.APPGWSKU }}" capacity="${{ env.APPGWCAPACITY }}" subnetName="${{ env.APPGWSUBNET }}" autoScaleMaxCapacity="${{ env.APPGWMAXCAPACITY }}"
+    - name: Create Application Gateway
+      uses: azure/arm-deploy@v1
+      id: createAppGw
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.SUBSCRIPTIONID }}
+        resourceGroupName: ${{ env.RESOURCEGROUPNAME }}
+        template: ./ArmTemplates/app-gw.json
+        parameters: applicationGatewayName="${{ env.APPGWNAME }}" location="${{ env.LOCATION }}" tier="${{ env.APPGWTIER }}" skuSize="${{ env.APPGWSKU }}" capacity="${{ env.APPGWCAPACITY }}" subnetName="${{ env.APPGWSUBNET }}" autoScaleMaxCapacity="${{ env.APPGWMAXCAPACITY }}"
     - name: Create AKS Cluster
       uses: azure/arm-deploy@v1
       id: deploy

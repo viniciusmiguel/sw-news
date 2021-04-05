@@ -56,7 +56,7 @@
                                 "subnets": [
                                     {
                                         "name": "default",
-                                        "id": "/subscriptions/02b977dc-c04f-4a17-bcaa-b9fbcc4244ad/resourceGroups/sw-news-rg/providers/Microsoft.Network/virtualNetworks/v-net/subnets/default",
+                                        "id": "/subscriptions/02b977dc-c04f-4a17-bcaa-b9fbcc4244ad/resourceGroups/sw-news-rg/providers/Microsoft.Network/virtualNetworks/v-net/subnets/cosmos",
                                         "etag": "W/\"a630adda-15a0-4ec9-a2af-49bc09d91135\"",
                                         "properties": {
                                             "provisioningState": "Succeeded",
