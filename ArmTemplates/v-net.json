@@ -27,7 +27,7 @@
                     {
                         "name": "default",
                         "properties": {
-                            "addressPrefix": "10.0.0.0/24",
+                            "addressPrefix": "10.254.0.0/24",
                             "serviceEndpoints": [],
                             "delegations": [],
                             "privateEndpointNetworkPolicies": "Enabled",
@@ -84,7 +84,7 @@
                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_v_net_name'))]"
             ],
             "properties": {
-                "addressPrefix": "10.0.0.0/24",
+                "addressPrefix": "10.254.0.0/24",
                 "serviceEndpoints": [
                     {
                         "service": "Microsoft.AzureCosmosDB",
