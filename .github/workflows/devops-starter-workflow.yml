@@ -23,7 +23,7 @@ env:
   OMSWORKSPACENAME: "skyworkznews2d68"
   HTTPSAPPLICATIONROUTINGENABLED: false
   KUBERNETESAPI: "apps/v1"
-  NAMESPACE: "skyworkznews2066"
+  NAMESPACE: "default"
   COSMOSNAME: "skyworkz-news-cosmos-db"
   COSMOSSQLNAME: "skyworkz-news-cosmos-db-sql"
   APPGWNAME: "skyworkz-news-app-gw"
