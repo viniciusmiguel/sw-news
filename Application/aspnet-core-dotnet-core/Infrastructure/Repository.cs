@@ -8,17 +8,19 @@ using System.Net;
 
 namespace Skyworkz.News.Infrastructure
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity, new()
     {
         private readonly CosmosDB _db;
 
-        protected readonly Container Container;
+        protected Container Container;
         public Repository(CosmosDB db)
         {
             _db = db;
-            Container = _db.DB.CreateContainerIfNotExistsAsync(nameof(TEntity), "/Id", 400).Result.Container;
+            var obj = new TEntity();
+            Container = _db.DB.CreateContainerIfNotExistsAsync(obj.GetType().Name, "/Id", 400).Result.Container;
             Console.WriteLine("Selected Container: " + Container.Id);
         }
+
         private T Read<T>(Guid id)
         {
             try

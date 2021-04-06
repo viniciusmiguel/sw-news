@@ -5,7 +5,7 @@ namespace Skyworkz.News.Domain
 {
     public class NewsEntity : Entity
     {
-        protected NewsEntity()
+        public NewsEntity()
         {
             
         }
