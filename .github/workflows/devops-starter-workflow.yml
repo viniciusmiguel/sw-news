@@ -90,7 +90,7 @@ jobs:
         inlineScript: |
           #!/bin/bash
           if $(az network application-gateway list -g ${{ env.RESOURCEGROUPNAME }} | grep -q ${{ env.APPGWNAME }} ) ; then
-            "Gateway already exists, skipping creation..."
+            echo "Gateway already exists, skipping creation..."
           else
             az network application-gateway create -n ${{ env.APPGWNAME }} -l ${{ env.LOCATION }} \
             -g ${{ env.RESOURCEGROUPNAME }} --sku WAF_v2 --public-ip-address skyworkz-news-public-ip \
