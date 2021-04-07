@@ -6,6 +6,7 @@ Command to create in Azure CLI:
 az ad sp create-for-rbac --name "skyworkz-news-github" --role Contributor --scopes /subscriptions/{YOUR SUBSCRIPTION ID}/resourceGroups/skyworkz-news-rg --sdk-auth
 AZURE_CREDENTIALS
 format:
+```json
 {
   "appId": "xxxxxx",
   "displayName": "xxxxx",
@@ -13,7 +14,7 @@ format:
   "password": "xxxxx",
   "tenant": "xxxxx"
 }
-
+```
 and AZURE_SP_SECRET
 This service principal is used by AGIC to control the gateway
 Command to create in Azure CLI:
@@ -29,11 +30,12 @@ https://ip/api/news/uuid GET - return a specific news article by id in JSON.
 https://ip/api/news POST 
 
 POST payload : JSON
+```json
 {
-    "Title" : "Your title"    
+    "Title" : "Your title",
     "Description" : "Your article description"
 }
-
+```
 Both fields are mandatory. The api is only validating if the request is valid.
 No domain validation was implemented to inspect the data.
 WAF is active to intercept common OWASP attacks.
