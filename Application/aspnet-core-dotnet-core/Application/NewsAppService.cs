@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Skyworkz.News.Domain;
 
 namespace Skyworkz.News.Application
@@ -20,7 +19,7 @@ namespace Skyworkz.News.Application
         public Task Create(NewsViewModel news)
         {
             //TODO: create command and domain event handler to deal properly with this operation.
-            var entity = _mapper.Map<Domain.NewsEntity>(news);
+            var entity = _mapper.Map<NewsEntity>(news);
 
             _newsRepository.Insert(entity);
 

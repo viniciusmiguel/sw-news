@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Skyworkz.News.Application;
 using Skyworkz.News.ViewModels;
@@ -14,10 +15,12 @@ namespace Skyworkz.News.Pages
             _newsAppService = newsAppService;
         }
 
-        public IEnumerable<NewsViewModel> NewsCollection;
-        public async Task OnGetAsync()
+        [BindProperty]
+        public IEnumerable<NewsViewModel> NewsCollection { get; set; }
+        public async Task<IActionResult> OnGetAsync()
         {
             this.NewsCollection = await _newsAppService.GetAll();
+            return Page();
         }
         public string DoTest()
         {
