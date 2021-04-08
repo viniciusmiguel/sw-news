@@ -1,6 +1,7 @@
 ﻿using Skyworkz.News.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Skyworkz.News.Domain;
@@ -16,22 +17,24 @@ namespace Skyworkz.News.Application
             _mapper = mapper;
             _newsRepository = newsRepository;
         }
-        public void Create(NewsViewModel news)
+        public Task Create(NewsViewModel news)
         {
             //TODO: create command and domain event handler to deal properly with this operation.
             var entity = _mapper.Map<Domain.NewsEntity>(news);
 
             _newsRepository.Insert(entity);
+
+            return Task.CompletedTask;
         }
 
-        public IEnumerable<NewsViewModel> GetAll()
+        public async Task<IEnumerable<NewsViewModel>> GetAll()
         {
-            return _newsRepository.GetAll().ProjectTo<NewsViewModel>(_mapper.ConfigurationProvider);
+            return _mapper.Map<IEnumerable<NewsViewModel>>(await _newsRepository.GetAll());
         }
 
-        public NewsViewModel GetById(Guid id)
+        public async Task<NewsViewModel> GetById(Guid id)
         {
-            return _mapper.Map<NewsViewModel>(_newsRepository.GetById(id));
+            return _mapper.Map<NewsViewModel>(await _newsRepository.GetById(id));
         }
     }
 }

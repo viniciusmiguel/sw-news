@@ -3,6 +3,7 @@ using Skyworkz.News.Application;
 using Skyworkz.News.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Skyworkz.News.Api
 {
@@ -17,23 +18,23 @@ namespace Skyworkz.News.Api
         }
         // GET: api/<NewsController>
         [HttpGet]
-        public IEnumerable<NewsViewModel> Get()
+        public async Task<IEnumerable<NewsViewModel>> Get()
         {
-            return _newsAppService.GetAll();
+            return await _newsAppService.GetAll();
         }
 
         // GET api/<NewsController>/5
         [HttpGet("{id}")]
-        public NewsViewModel Get(Guid id)
+        public async Task<NewsViewModel> Get(Guid id)
         {
-            return _newsAppService.GetById(id);
+            return await _newsAppService.GetById(id);
         }
 
         // POST api/<NewsController>
         [HttpPost]
-        public void Post([FromBody] NewsViewModel news)
+        public async Task Post([FromBody] NewsViewModel news)
         {
-            _newsAppService.Create(news);
+            await _newsAppService.Create(news);
         }
     }
 }

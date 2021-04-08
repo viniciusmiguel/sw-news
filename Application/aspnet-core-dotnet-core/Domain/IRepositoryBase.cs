@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Skyworkz.News.Domain
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        IQueryable<TEntity> GetAll();
-        TEntity GetById(Guid id);
+        Task<IEnumerable<TEntity>> GetAll();
+        Task<TEntity> GetById(Guid id);
         void Insert(TEntity entity);
     }
 }

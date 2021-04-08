@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Skyworkz.News.Infrastructure
@@ -12,26 +14,30 @@ namespace Skyworkz.News.Infrastructure
     {
         private readonly AppDbContext _db;
 
-        protected Container Container;
         public Repository(AppDbContext db)
         {
             _db = db;
         }
 
-        public IQueryable<TEntity> GetAll()
+        public async Task<IEnumerable<TEntity>> GetAll()
         {
-            return _db.Set<TEntity>();
+            return await _db.Set<TEntity>().ToListAsync();
         }
 
-        public TEntity GetById(Guid id)
+        public async Task<TEntity> GetById(Guid id)
         {
-            return _db.Set<TEntity>().Find(id);
+            return await _db.Set<TEntity>().FindAsync(id);
         }
 
         public void Insert(TEntity entity)
         {
             _db.Set<TEntity>().Add(entity);
             _db.SaveChanges();
+        }
+
+        public void Dispose()
+        {
+            _db.Dispose();
         }
     }
 }
