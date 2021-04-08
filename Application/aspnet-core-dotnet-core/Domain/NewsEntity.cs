@@ -5,10 +5,7 @@ namespace Skyworkz.News.Domain
 {
     public class NewsEntity : Entity
     {
-        public NewsEntity()
-        {
-            
-        }
+        public NewsEntity() { } //To EF
         public NewsEntity(string title, string description)
         {
             Id = Guid.NewGuid();
@@ -17,12 +14,9 @@ namespace Skyworkz.News.Domain
             Date = DateTime.Now;
         }
         
-        public string Title { get; private set; }
-        public string Description { get; private set; }
-        public DateTime Date { get; private set; }
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this);
-        }
+        public string Title { get; protected set; }
+        public string Description { get; protected set; }
+        public DateTime Date { get; protected set; }
+
     }
 }

@@ -46,14 +46,31 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+#    - name: Create Virtual Net
+#      uses: azure/arm-deploy@v1
+#      id: createVnet
+#      with:
+#        scope: resourcegroup
+#        subscriptionId: ${{ env.SUBSCRIPTIONID }}
+#        resourceGroupName: ${{ env.RESOURCEGROUPNAME }}
+#        template: ./ArmTemplates/v-net.json
+#Since AGIC changes the vnet routing table. It creates erradic behaviour if arm-deploy is used, manual script is a better choice.
     - name: Create Virtual Net
-      uses: azure/arm-deploy@v1
-      id: createVnet
+      uses: azure/CLI@v1
+      id: createVirtualNetScript
       with:
-        scope: resourcegroup
-        subscriptionId: ${{ env.SUBSCRIPTIONID }}
-        resourceGroupName: ${{ env.RESOURCEGROUPNAME }}
-        template: ./ArmTemplates/v-net.json
+        inlineScript: |
+          #!/bin/bash
+          if $(az network vnet list | grep -q v-net) ; then
+            echo "Virtual net already exists, skipping..."
+          else
+            az network vnet create --name v-net --resource-group ${{ env.RESOURCEGROUPNAME }} --ddos-protection true \
+            --location ${{ env.LOCATION }} --subnet-name default --address-prefix 10.0.0.0/8 --subnet-prefix 10.254.0.0/24
+            az network vnet subnet create --name gw -g ${{ env.RESOURCEGROUPNAME }} --vnet-name v-net --address-prefixes 10.1.0.0/24
+            az network vnet subnet create --name cosmos -g ${{ env.RESOURCEGROUPNAME }} --vnet-name v-net --address-prefixes 10.2.0.0/24
+            az network vnet subnet create --name aks-subnet -g ${{ env.RESOURCEGROUPNAME }} --vnet-name v-net --address-prefixes 10.10.0.0/16
+          fi
+
     - name: Create Public IP
       uses: azure/arm-deploy@v1
       id: createPublicIp

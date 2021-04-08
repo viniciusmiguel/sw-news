@@ -1,11 +1,22 @@
 # Skyworks News Test App
 
-To deploy this application a resource group called "sw-news-rg" needs to be created and
-two secrets must be created and added to github secrets:
+To deploy this application a resource group called "sw-news-rg" needs to be created.
+The yaml workflow file must be updated with your Subscription Id in the constant:
+
+```
+SUBSCRIPTIONID: "<your id>"
+```
+
+Two secrets must be created and added to github secrets:
+
+First: AZURE_CREDENTIALS
+
 Command to create in Azure CLI:
+```
 az ad sp create-for-rbac --name "skyworkz-news-github" --role Contributor --scopes /subscriptions/{YOUR SUBSCRIPTION ID}/resourceGroups/skyworkz-news-rg --sdk-auth
-AZURE_CREDENTIALS
-format:
+```
+
+Format:
 ```json
 {
   "appId": "xxxxxx",
@@ -15,18 +26,24 @@ format:
   "tenant": "xxxxx"
 }
 ```
-and AZURE_SP_SECRET
-This service principal is used by AGIC to control the gateway
-Command to create in Azure CLI:
-az ad sp create-for-rbac --name "skyworkz-news-agic" --sdk-auth --role Contributor | base64 -w0
 
+Second: AZURE_SP_SECRET
+
+Command to create in Azure CLI:
+```
+az ad sp create-for-rbac --name "skyworkz-news-agic" --sdk-auth --role Contributor | base64 -w0
+```
 format: the output is a long key.
+
 
 The sample application was developed using .net core.
 It exposes a simple frontend using Razor pages and
 a api with the following routes:
+
 https://ip/api/news GET - return the list of news in JSON.
+
 https://ip/api/news/uuid GET - return a specific news article by id in JSON.
+
 https://ip/api/news POST 
 
 POST payload : JSON
@@ -46,10 +63,19 @@ The diagram bellow illustatres, in general, the IaC:
 
 Improvements:
 No DNS infra was deployed, for that a domain must be setup.
+
 The digital certificate is self signed. With a domain a cert-manager chart could be deployed to letsencrypt it :)
+
 The Application Gateway is doing the SSL offloading, for higher security scenarios the pods could have certificates
 and talk only https.
+
 Firewalls where not implemented inside the v-net to isolated the subnets.
+
 Application domain should validate field content also.
+
 Missing unit and integration tests. 
+
 Define more granular roles for the service principals used in the automation.
+
+The script only deploys single nodes to limit the resources in my test enviroment. To comply with high availability RFC in production
+it should have at least 3 nodes in different availability zones.
