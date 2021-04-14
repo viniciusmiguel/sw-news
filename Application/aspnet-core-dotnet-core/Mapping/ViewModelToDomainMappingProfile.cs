@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Globalization;
+using AutoMapper;
 using Skyworkz.News.Domain;
 using Skyworkz.News.ViewModels;
 
@@ -8,7 +10,7 @@ namespace Skyworkz.News.Mapping
     {
         public ViewModelToDomainMappingProfile()
         {
-            CreateMap<NewsViewModel, NewsEntity>();
+            CreateMap<NewsViewModel, NewsEntity>().ConstructUsing(e => new NewsEntity(e.Title, e.Description));
         }
     }
 }

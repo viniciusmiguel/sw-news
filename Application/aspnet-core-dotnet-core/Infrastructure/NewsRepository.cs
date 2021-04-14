@@ -4,7 +4,7 @@ namespace Skyworkz.News.Infrastructure
 {
     public class NewsRepository : Repository<NewsEntity>, INewsRepository
     {
-        public NewsRepository(AppDbContext db) : base(db)
+        public NewsRepository(CosmosDB db) : base(db)
         {
         }
     }

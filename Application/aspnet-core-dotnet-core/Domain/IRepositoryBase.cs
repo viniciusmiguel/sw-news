@@ -7,7 +7,7 @@ namespace Skyworkz.News.Domain
     public interface IRepository<TEntity> where TEntity : class
     {
         Task<IEnumerable<TEntity>> GetAll();
-        Task<TEntity> GetById(Guid id);
-        void Insert(TEntity entity);
+        Task<TEntity> GetById(string id);
+        Task Insert(TEntity entity);
     }
 }

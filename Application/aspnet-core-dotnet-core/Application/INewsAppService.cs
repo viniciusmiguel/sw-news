@@ -9,7 +9,7 @@ namespace Skyworkz.News.Application
     public interface INewsAppService
     {
         Task<IEnumerable<NewsViewModel>> GetAll();
-        Task<NewsViewModel> GetById(Guid id);
+        Task<NewsViewModel> GetById(string id);
         Task Create(NewsViewModel news);
     }
 }

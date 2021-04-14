@@ -1,7 +1,6 @@
 ﻿
 using System;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Skyworkz.News.Domain;
 
 namespace Skyworkz.News.Infrastructure

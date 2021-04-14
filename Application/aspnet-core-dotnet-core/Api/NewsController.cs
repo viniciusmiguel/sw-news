@@ -25,7 +25,7 @@ namespace Skyworkz.News.Api
 
         // GET api/<NewsController>/5
         [HttpGet("{id}")]
-        public async Task<NewsViewModel> Get(Guid id)
+        public async Task<NewsViewModel> Get(string id)
         {
             return await _newsAppService.GetById(id);
         }
