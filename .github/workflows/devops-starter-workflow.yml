@@ -64,7 +64,7 @@ jobs:
           if $(az network vnet list | grep -q v-net) ; then
             echo "Virtual net already exists, skipping..."
           else
-            az network vnet create --name v-net --resource-group ${{ env.RESOURCEGROUPNAME }} --ddos-protection true \
+            az network vnet create --name v-net --resource-group ${{ env.RESOURCEGROUPNAME }} --ddos-protection false \
             --location ${{ env.LOCATION }} --subnet-name default --address-prefix 10.0.0.0/8 --subnet-prefix 10.254.0.0/24
             az network vnet subnet create --name gw -g ${{ env.RESOURCEGROUPNAME }} --vnet-name v-net --address-prefixes 10.1.0.0/24
             az network vnet subnet create --name cosmos -g ${{ env.RESOURCEGROUPNAME }} --vnet-name v-net --address-prefixes 10.2.0.0/24
