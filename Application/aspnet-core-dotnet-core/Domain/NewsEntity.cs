@@ -5,18 +5,19 @@ namespace Skyworkz.News.Domain
 {
     public class NewsEntity : Entity
     {
+        
         public NewsEntity() { } //To EF
         public NewsEntity(string title, string description)
         {
             Id = Guid.NewGuid();
             Title = title;
             Description = description;
-            Date = DateTime.Now;
+            When = DateTime.Today.ToString();
         }
         
         public string Title { get; protected set; }
         public string Description { get; protected set; }
-        public DateTime Date { get; protected set; }
+        public string When { get; protected set; }
 
     }
 }

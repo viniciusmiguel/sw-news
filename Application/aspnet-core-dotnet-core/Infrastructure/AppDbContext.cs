@@ -1,6 +1,7 @@
 ﻿
 using System;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Skyworkz.News.Domain;
 
 namespace Skyworkz.News.Infrastructure
@@ -9,11 +10,12 @@ namespace Skyworkz.News.Infrastructure
     {
         public AppDbContext()
         {
-            this.Database.EnsureCreated();
+            Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = Environment.GetEnvironmentVariable("cosmos-connection-string");
+            Console.WriteLine("Connection String Loaded: " + connectionString);
             optionsBuilder.UseCosmos(connectionString, "skyworkz-news-cosmos-db-sql");
             base.OnConfiguring(optionsBuilder);
         }
@@ -21,7 +23,10 @@ namespace Skyworkz.News.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<NewsEntity>()
-                .ToContainer("News");
+                .ToContainer("News")
+                .Property(e => e.When)
+                .HasConversion<string>();
+
 
             base.OnModelCreating(modelBuilder);
         }

@@ -11,6 +11,6 @@ namespace Skyworkz.News.ViewModels
         public string Title { get; set; }
         [Required(ErrorMessage = "A Description is mandatory to the news article")]
         public string Description { get; set; }
-        public DateTime Date { get; set; }
+        public string When { get; set; }
     }
 }
